@@ -12,12 +12,16 @@ let codeError502 = { code: 503, error: true, message: 'The field: name, surname,
 let codeError503 = { code: 503, error: true, message: 'Error: Player Exists' };
 let codeError504 = { code: 504, error: true, message: 'Error: Player not found' };
 
-
 var players = [
     { position: "1", alias: "jperez", name: "Jose", surname: "Perez", score: 1000, created: "2020-11-03T15:20:21.377Z"},
     { position: "2", alias: "jsanz", name: "Juan", surname: "Sanz", score: 950, created: "2020-11-03T15:20:21.377Z" },
     { position: "3", alias: "mgutierrez", name: "Maria", surname: "Gutierrez", score: 850, created: "2020-11-03T15:20:21.377Z" }
 ];
+let response = {
+    error: false,
+    code: 200,
+    message: ''
+};
 
 function UpdateRanking() {
     //Order the ranking

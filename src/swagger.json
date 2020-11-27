@@ -5,8 +5,6 @@
         "title": "Node Players",
         "description": "SwaggerUI + Nodejs + express"
     },
-    "host": "simple.api",
-    "basePath": "/openapi101",
     "paths": {
         "/": {
             "get": {

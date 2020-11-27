@@ -1,12 +1,11 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const app = express()
-const apijs = require('./Api.js')
-
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('./swagger.json');
+const apijs = require('./Api');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-var swaggerUi = require('swagger-ui-express'),
-    swaggerDocument = require('./swagger.json');
 
 
 const port = process.env.PORT || 3000;
