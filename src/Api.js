@@ -17,7 +17,7 @@ let codeError504 = { code: 504, error: true, message: 'Error: Player not found' 
 var swaggerUi = require('swagger-ui-express'),
     swaggerDocument = require('./swagger.json');
 
-app.use('/api', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
 
 var players = [
     { position: "1", alias: "jperez", name: "Jose", surname: "Perez", score: 1000, created: "2020-11-03T15:20:21.377Z"},
