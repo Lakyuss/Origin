@@ -1,8 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const app = express()
-
-
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
@@ -13,10 +11,6 @@ let code202 = { code: 201, error: false, message: 'Player Correctly Updated' };
 let codeError502 = { code: 503, error: true, message: 'The field: name, surname, score are mandatories (the score value has to be >0)' };
 let codeError503 = { code: 503, error: true, message: 'Error: Player Exists' };
 let codeError504 = { code: 504, error: true, message: 'Error: Player not found' };
-
-var swaggerUi = require('swagger-ui-express'),
-    swaggerDocument = require('./swagger.json');
-
 
 
 var players = [
