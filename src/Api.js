@@ -1,6 +1,8 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const app = express()
+var router = express.Router();
+const fs = require('fs')
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
@@ -22,47 +24,64 @@ let response = {
     code: 200,
     message: ''
 };
-
-function UpdateRanking() {
-    //Order the ranking
+ 
+/*function UpdateRanking() {
     players.sort((a, b) => (a.score <= b.score) ? 1 : -1);
 
-    //Position Update
     for (x = 0; x < players.length; x++) {
         players[x].position = x + 1;
     }
 };
 
-app.get('/', function (req, res) {
-    //code funciona ok
+function getjson()
+{
+    fs.readFile('./src/player.json', 'utf8', (err, jsonString) => {
+        if (err) {
+            console.log("File read failed:", err)
+            return
+        }
+        players = JSON.parse(jsonString);
+    })
+}
+
+function savejson()
+{
+    const str = JSON.stringify(players);
+    fs.writeFile('./src/player.json', str,'utf8', (err) => { 
+        if (err) throw err; 
+        console.log('The file has been saved!'); 
+    });
+}*/
+
+router.get('/', function (req, res) {
     res.send(code100);
 });
 
-app.get('/ranking', function (req, res) {
+router.get('/ranking', function (req, res) {
     let ranking = { namebreplayers: players.length, players: players };
     res.send(ranking);
 });
 
-app.get('/players', function (req, res){
+router.get('/players', function (req, res){
     res.send(players);
 });
 
-app.get('/players/:alias', function (req, res) {
-    //Player Search
+router.get('/players/:alias', function (req, res) {
     var index = players.findIndex(j => j.alias === req.params.alias);
 
-    if (index >= 0) {
-        //Player exists
+    if (index >= 0) 
+    {                                                                                                                     
         response = code200;
         response.jugador = players[index];
-    } else {
-        //Player doesn't exists
+    } 
+    else 
+    {
         response = codeError504;
     }
     res.send(response);
 });
 
-app.post('/players/:alias', function (req, res) {
+router.post('/players/:alias', function (req, res) {
     var paramAlias = req.params.alias || '';
     var paramName = req.body.name || '';
     var paramSurname = req.body.surname || '';
@@ -70,15 +89,17 @@ app.post('/players/:alias', function (req, res) {
 
     if (paramAlias === '' || paramName === '' || paramSurname === '' || parseInt(paramScore) <= 0 || paramScore === '') {
         response = codeError502;
-    } else {
-        //Player Search
+    } 
+    else 
+    {
         var index = players.findIndex(j => j.alias === paramAlias)
 
-        if (index != -1) {
-            //Player allready exists
+        if (index != -1) 
+        {
             response = codeError503;
-        } else {
-            //Add Player
+        } 
+        else 
+        {
             players.push({ 
                 position: '', 
                 alias: paramAlias, 
@@ -87,11 +108,8 @@ app.post('/players/:alias', function (req, res) {
                 score: paramScore ,
                 created: new Date()
             });
-            //Sort the ranking
             UpdateRanking();
-            //Search Player Again
             index = players.findIndex(j => j.alias === paramAlias);
-            //Response return
             response = code201;
             response.player = players[index];
         }
@@ -99,20 +117,22 @@ app.post('/players/:alias', function (req, res) {
     res.send(response);
 });
 
-app.put('/players/:alias', function (req, res) {
+router.put('/players/:alias', function (req, res) {
     var paramalias = req.params.alias || '';
     var paramname = req.body.name || '';
     var paramsurname = req.body.surname || '';
     var paramScore = req.body.score || '';
 
-    if (paramalias === '' || paramname === '' || paramsurname === '' || parseInt(paramScore) <= 0 || paramScore === '') {
-        response = codeError502; //Paràmetres incomplerts
-    } else {
-        //Player Search
+    if (paramalias === '' || paramname === '' || paramsurname === '' || parseInt(paramScore) <= 0 || paramScore === '') 
+    {
+        response = codeError502;
+    } 
+    else 
+    {
         var index = players.findIndex(j => j.alias === paramalias)
 
-        if (index != -1) {
-            //Update Player
+        if (index != -1) 
+        {
             players[index] = { 
                 position: '', 
                 alias: paramalias, 
@@ -122,17 +142,74 @@ app.put('/players/:alias', function (req, res) {
                 created:  players[index].created,
                 updated: new Date()
             };
-            //Sort the ranking
             UpdateRanking();
-            //Search Player Again
             index = players.findIndex(j => j.alias === paramalias);
-            //Response return
             response = code202;
             response.jugador = players[index];
-        } else {
+        } 
+        else 
+        {
             response = codeError504;
         }
     }
+
+    router.delete('/players/:alias', function(req,res){
+        var paramAlias = req.params.alias || '';
+        if (paramAlias === '') 
+        {
+            response = codeError502;
+        } 
+        else
+        {
+            getjson();
+            var index = players.findIndex(j => j.alias === paramAlias);
+            var playerIndex = players.indexOf("Jugador");
+            if (index != -1) 
+            {
+                console.log("The player "+ paramAlias+" has ben deleted");
+                response = code203;
+                players.splice(index, 1);
+                UpdateRanking();
+            }
+            else 
+            {
+                response = codeError504;
+            }
+        }
+        res.send(response);
+    });
+    router.get('/buycoins/:alias', function(req,res){
+        var paramAlias = req.params.alias || '';
+        var parambilletes = req.body.billetes || '';
+        var moneywinned = 2;       
+        var price = 1;
+        if (paramAlias === '' || parambilletes === '') {
+            response = codeErrorBuy402;
+        }
+        else{
+            getjson();
+            var index = players.findIndex(j => j.alias === paramAlias)
+            if(players[index].billetes < 1)
+            {
+                response = codeErrorBuy403;
+            }
+            else
+            {
+                players[index].billetes -= precio;
+                players[index].coins += ganancia;
+                response = codeBuy401;
+                response.jugador = players[index];
+            }
+        }
+        res.send(response);
+    });
     res.send(response);
 });
-module.exports = app;
+module.exports = router;
+
+/*module.exports.dataChecker = dataChecker;
+module.exports.searcher = searcher;
+module.exports.createPlayer = createPlayer;
+module.exports.updatePlayer = updatePlayer;
+module.exports.sendPlayer = sendPlayer;
+module.exports.sendPlayers = sendPlayers;*/
